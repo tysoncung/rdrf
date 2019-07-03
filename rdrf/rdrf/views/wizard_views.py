@@ -36,6 +36,7 @@ class ReviewDataHandler:
         self.patient_review = None
         self.patient_model = None
         self.parent_model = None
+        self.clinician = None
         self.context_model = None
         self.user = user
         self._build_data_map()
@@ -109,6 +110,7 @@ class ReviewItemPageData:
     """
 
     def __init__(self, token, review_model, review_form):
+        self.review_type = review_model.review_type
         self.token = token
         self.review_model = review_model
         self.review_form = review_form
@@ -120,7 +122,7 @@ class ReviewItemPageData:
         self.patient_model = self.patient_review.patient
         self.parent_model = self._get_parent(self.user)
         self.is_parent = self.parent_model is not None
-        self.clinician_user = None
+        self.clinician_user = self.patient_review.user
         # this depends on the type of review item:
         self.previous_data = self.review_item_model.get_data(self.patient_model,
                                                              self.patient_review.context)
@@ -136,7 +138,13 @@ class ReviewItemPageData:
 
     def _get_parent(self, user):
         try:
-            return ParentGuardian.objects.get(user=user)
+            parent = self.patient_review.parent
+            if parent:
+                name = "%s %s" % (parent.first_name,
+                                  parent.last_name)
+                return name
+            else:
+                return "Unknown"
         except ParentGuardian.DoesNotExist:
             return None
 
@@ -212,6 +220,13 @@ class ReviewWizardGenerator:
             return HttpResponseRedirect(THANKYOU_PAGE)
 
         def get_context_data_method(myself, form, **kwargs):
+            request_user = myself.request.user
+            logger.debug("user from request = %s" % request_user)
+            review_user = self.patient_review.user
+            logger.debug("review user = %s" % review_user)
+            user_match = request_user.id == review_user.id
+            is_admin = request_user.is_superuser
+
             token = myself.request.GET.get("t")
             page = ReviewItemPageData(token, self.review_model, form)
 
@@ -220,14 +235,18 @@ class ReviewWizardGenerator:
 
             context.update({"review_title": page.title,
                             "summary": page.summary,
+                            "user_match": user_match,
+                            "is_admin": is_admin,
                             "category": page.category,
                             "name": page.name,
                             "responses": page.responses,
                             "valid": page.valid,
                             "parent": page.parent_model,
                             "patient": page.patient_model,
-                            "is_clinician_review": page.is_clinician_review,
-                            "is_parent_review": page.is_parent_review,
+                            "patient_first_name": page.patient_model.given_names,
+                            "patient_last_name": page.patient_model.family_name,
+                            "clinician_review": page.review_type == "V",
+                            "parent_review": page.review_type == "R",
                             "clinician": page.clinician_user})
             return context
 

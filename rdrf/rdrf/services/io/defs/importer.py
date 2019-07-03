@@ -706,6 +706,7 @@ class Importer(object):
                 review_item.position = item_dict["position"]
                 review_item.item_type = item_dict["item_type"]
                 review_item.fields = item_dict["fields"]
+                review_item.target_code = item_dict["target_code"]
                 review_item.summary = item_dict["summary"]
                 review_item.appearance_condition = item_dict["appearance_condition"]
                 review_item.save()

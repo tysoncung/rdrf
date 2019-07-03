@@ -9,28 +9,31 @@
     {% endblock %}
   </head>
   <body>
+    {% if user_match or is_admin %}
     {% if valid %}
     <div class="jumbotron">
       <h1>{{ review_title }}</h1>
 
       {% if clinician_review %}
-      <h3>{{ clinician }} reviewing {{patient}} on behalf of {{parent}}</h3>
+      <h3>{{ clinician }} reviewing {{patient_first_name}} {{patient_last_name}} on behalf of {{parent}}</h3>
       {% endif %}
 
       {% if parent_review %}
-      <h3>{{ parent }} on behalf of {{patient}}</h3>
+      <h3>{{ parent }} on behalf of {{patient_first_name}} {{patient_last_name}}</h3>
       {% endif %}
 
       <h2>{{ category }}</h2>
-      
    </div>
-   {% endif %}
-    
+    {% endif %}
+
     {% if valid %}
     {% block content %}
     {% endblock %}
     {% else %}
     <h1>This page is no longer valid</h1>
+    {% endif %}
+    {% else %}
+    <h1>You are not authorised to perform this review</h1>
     {% endif %}
   </body>
 </html>

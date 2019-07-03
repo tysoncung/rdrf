@@ -546,6 +546,7 @@ class VerificationStatus:
     VERIFIED = "V"
     NOT_VERIFIED = "N"
     UNKNOWN = "U"
+    CORRECTED = "C"
 
 
 class HasChangedStates:

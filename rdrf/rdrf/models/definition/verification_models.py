@@ -7,6 +7,7 @@ from rdrf.models.definition.models import RDRFContext
 
 VER_CHOICES = ((VerificationStatus.VERIFIED, "Verified"),
                (VerificationStatus.NOT_VERIFIED, "Not Verified"),
+               (VerificationStatus.CORRECTED, "Changed and verified after discussion"),
                (VerificationStatus.UNKNOWN, "Unknown"))
 
 

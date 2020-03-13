@@ -177,16 +177,8 @@ def export_registry_action(modeladmin, request, registry_models_selected):
 export_registry_action.short_description = "Export"
 
 
-def generate_questionnaire_action(modeladmin, request, registry_models_selected):
-    for registry in registry_models_selected:
-        registry.generate_questionnaire()
-
-
-generate_questionnaire_action.short_description = _("Generate Questionnaire")
-
-
 class RegistryAdmin(admin.ModelAdmin):
-    actions = [export_registry_action, generate_questionnaire_action]
+    actions = [export_registry_action]
 
     def get_queryset(self, request):
         if not request.user.is_superuser:
